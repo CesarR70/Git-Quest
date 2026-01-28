@@ -15,6 +15,7 @@ fi
 # ============================================================================
 
 # Validate if input matches expected command (with flexibility)
+# Supports wildcards (*) in expected_cmd for partial matching
 # Returns 0 if matches, 1 if not
 validate_command() {
     local user_input="$1"
@@ -27,6 +28,51 @@ validate_command() {
     # Exact match
     if [[ "$user_input" == "$expected_cmd" ]]; then
         return 0
+    fi
+    
+    # Check if expected_cmd contains wildcards for pattern matching
+    if [[ "$expected_cmd" == *"*"* ]]; then
+        # Build regex pattern first, THEN remove quotes from both for comparison
+        local pattern="$expected_cmd"
+        local user_input_clean="$user_input"
+        
+        # Build regex pattern by escaping special chars and converting * to wildcard
+        local regex_pattern=""
+        local i=0
+        while [[ $i -lt ${#pattern} ]]; do
+            local char="${pattern:$i:1}"
+            if [[ "$char" == "*" ]]; then
+                regex_pattern="${regex_pattern}.*"
+            else
+            # Escape regex special characters
+            case "$char" in
+                '.'|'['|']'|'\\'|'('|')'|'+'|'?'|'{'|'}'|'|'|'^'|'$')
+                    regex_pattern="${regex_pattern}\\${char}"
+                    ;;
+                *)
+                    regex_pattern="${regex_pattern}${char}"
+                    ;;
+            esac
+            fi
+            ((i++))
+        done
+        
+        # Now remove ALL quotes from both for comparison
+        user_input_clean="${user_input_clean//\'/}"
+        user_input_clean="${user_input_clean//\"/}"
+        
+        # Also remove surrounding wildcards from pattern to allow flexible matching
+        # If pattern is "*message*", match just "message" anywhere in input
+        
+        if [[ "$regex_pattern" =~ ^\.\*(.+)\.\*$ ]]; then
+            # Pattern is *something*, match that something anywhere
+            local match_content="${BASH_REMATCH[1]}"
+            if [[ "$user_input_clean" == *"$match_content"* ]]; then
+                return 0
+            fi
+        elif [[ "$user_input_clean" =~ ^${regex_pattern}$ ]]; then
+            return 0
+        fi
     fi
     
     # Check if it starts with the expected command
@@ -115,8 +161,22 @@ validate_git_commit() {
     local input="$1"
     local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
     
-    # Must have -m flag with a message
+    # Normalize double-dashes to single-dashes for comparison
+    # git allows both --flag and -flag (short form)
+    local normalized_nodash="${normalized//---/-}"
+    
+    # Must have commit command with -m flag (or --m for --amend)
     if [[ "$normalized" == "git commit"* ]] && [[ "$normalized" == *"-m"* ]]; then
+        return 0
+    fi
+    
+    # Also accept --amend form
+    if [[ "$normalized" == "git commit --amend"* ]] || [[ "$normalized" == "git commit -amend"* ]]; then
+        return 0
+    fi
+    
+    # Accept --allow-empty form
+    if [[ "$normalized" == "git commit --allow-empty"* ]] || [[ "$normalized" == "git commit -allow-empty"* ]]; then
         return 0
     fi
     
@@ -294,7 +354,7 @@ get_hint() {
             echo "Use: git add <filename> or git add . (to add all files)"
             ;;
         "git commit")
-            echo "Remember the -m flag for a message: git commit -m 'message'"
+            echo "Remember the -m flag with a message: git commit -m 'message'"
             ;;
         "git status")
             echo "Just type: git status"
@@ -313,6 +373,27 @@ get_hint() {
             ;;
         "git merge")
             echo "Use: git merge <branch-name> to merge a branch into current"
+            ;;
+        "git log --oneline")
+            echo "Use: git log --oneline"
+            ;;
+        "git log --graph")
+            echo "Try combining it with --oneline: git log --graph --oneline"
+            ;;
+        "git checkout -b")
+            echo "Use: git checkout -b <branch-name> to create and switch"
+            ;;
+        "git branch")
+            echo "Use: git branch to list branches, or git branch <name> to create"
+            ;;
+        "git show")
+            echo "Use: git show to see the latest commit details"
+            ;;
+        "git diff")
+            echo "Use: git diff to see unstaged changes"
+            ;;
+        "git stash")
+            echo "Use: git stash to temporarily save changes"
             ;;
         *)
             echo "Think about what the task is asking for..."
@@ -451,17 +532,193 @@ EOF
 # REMOTE COMMANDS
 # ============================================================================
 
+# ============================================================================
+# ADVANCED COMMAND VALIDATORS (for chapters 10-17)
+# ============================================================================
+
+# Validate git reset
+validate_git_reset() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git reset"* ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Validate git stash
+validate_git_stash() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git stash" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Validate git show
+validate_git_show() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git show" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Validate git log --oneline
+validate_git_log_oneline() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    # Accept exact match or with additional spaces
+    if [[ "$normalized" == "git log --oneline" ]]; then
+        return 0
+    fi
+    
+    # Also accept with extra spaces around --oneline flag
+    if [[ "$normalized" == "git log --oneline "* ]] || [[ "$normalized" == "git log --oneline" ]]; then
+        return 0
+    fi
+    
+    # Accept variations like "git log --oneline" 
+    if [[ "$normalized" == "git log --oneline"* ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Validate git rebase
+validate_git_rebase() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git rebase"* ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Validate git branch creation (more specific)
+validate_git_branch_create() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git branch "* ]]; then
+        local after_branch="${normalized#git branch }"
+        after_branch=$(echo "$after_branch" | xargs)
+        if [[ -n "$after_branch" ]]; then
+            return 0
+        fi
+    fi
+    
+    return 1
+}
+
+# Validate git branch list
+validate_git_branch_list() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git branch" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
 # Validate git remote
 validate_git_remote() {
     local input="$1"
     local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
     
     # Check for git remote add origin <url>
-    if [[ "$normalized" == "git remote add origin"* ]] && [[ "$normalized" == *"http"* ]] || [[ "$normalized" == *"https"* ]] || [[ "$normalized" == *"git@"* ]]; then
+    if [[ "$normalized" == "git remote add origin"* ]] && ([[ "$normalized" == *"http"* ]] || [[ "$normalized" == *"https"* ]] || [[ "$normalized" == *"git@"* ]]); then
         return 0
     fi
     
     return 1
+}
+
+# ============================================================================
+# ADVANCED COMMAND SIMULATION (for chapters 10-17)
+# ============================================================================
+
+# Show fake git reset output
+show_fake_git_reset() {
+    cat << 'EOF'
+Unstaged changes after reset:
+  (use "git add <file>..." to update what will be committed)
+	modified:   test.txt
+EOF
+}
+
+# Show fake git stash output
+show_fake_git_stash() {
+    cat << 'EOF'
+Saved working directory and index state WIP on main: a1b2c3d Add initial content
+EOF
+}
+
+# Show fake git show output
+show_fake_git_show() {
+    cat << 'EOF'
+commit a1b2c3d
+Author: Git Quest <gitquest@example.com>
+Date:   Mon Jan 1 12:00:00 2026 -0000
+
+    Add new line
+
+diff --git a/show.txt b/show.txt
+index 1234567..89abcde 100644
+--- a/show.txt
++++ b/show.txt
+@@ -1,2 +1,3 @@
+ This is the first line.
+ This is the second line.
++This is a new line.
+EOF
+}
+
+# Show fake git log --oneline output
+show_fake_git_log_oneline() {
+    cat << 'EOF'
+a1b2c3d Add new line
+e4f5g6h Add initial content
+EOF
+}
+
+# Show fake git branch creation output
+show_fake_git_branch_create() {
+    cat << 'EOF'
+Switched to a new branch 'feature-branch'
+EOF
+}
+
+# Show fake git branch list output
+show_fake_git_branch_list() {
+    cat << 'EOF'
+  feature-branch
+* main
+EOF
+}
+
+# Show fake git rebase output
+show_fake_git_rebase() {
+    cat << 'EOF'
+First, rewinding head to replay your work on top of it...
+Applying: Add initial content
+Applying: Minor change
+Applying: Another change
+EOF
 }
 
 # Show fake git remote output
