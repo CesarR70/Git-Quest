@@ -29,6 +29,15 @@ source "${SCRIPT_DIR}/chapters/chapter5.sh"
 source "${SCRIPT_DIR}/chapters/chapter6.sh"
 source "${SCRIPT_DIR}/chapters/chapter7.sh"
 source "${SCRIPT_DIR}/chapters/chapter8.sh"
+source "${SCRIPT_DIR}/chapters/chapter9.sh"
+source "${SCRIPT_DIR}/chapters/chapter10.sh"
+source "${SCRIPT_DIR}/chapters/chapter11.sh"
+source "${SCRIPT_DIR}/chapters/chapter12.sh"
+source "${SCRIPT_DIR}/chapters/chapter13.sh"
+source "${SCRIPT_DIR}/chapters/chapter14.sh"
+source "${SCRIPT_DIR}/chapters/chapter15.sh"
+source "${SCRIPT_DIR}/chapters/chapter16.sh"
+source "${SCRIPT_DIR}/chapters/chapter17.sh"
 
 # ============================================================================
 # MAIN GAME
@@ -210,7 +219,16 @@ play_game() {
     chapter6_intro
     chapter7_intro
     chapter8_intro
-    
+    chapter9_intro
+    chapter10_intro
+    chapter11_intro
+    chapter12_intro
+    chapter13_intro
+    chapter14_intro
+    chapter15_intro
+    chapter16_intro
+    chapter17_intro
+
     # Show completion screen
     show_completion_screen
     
@@ -244,12 +262,21 @@ chapter_select() {
         echo -e "${CYAN}  6.${NC} ${WHITE}Chapter 6: Branching and Merging${NC}"
         echo -e "${CYAN}  7.${NC} ${WHITE}Chapter 7: Advanced Branching${NC}"
         echo -e "${CYAN}  8.${NC} ${WHITE}Chapter 8: Collaboration${NC}"
+        echo -e "${CYAN}  9.${NC} ${WHITE}Chapter 9: Advanced Branching${NC}"
+        echo -e "${CYAN} 10.${NC} ${WHITE}Chapter 10: Undoing Changes${NC}"
+        echo -e "${CYAN} 11.${NC} ${WHITE}Chapter 11: Seeing the History${NC}"
+        echo -e "${CYAN} 12.${NC} ${WHITE}Chapter 12: Temporarily Saving Changes${NC}"
+        echo -e "${CYAN} 13.${NC} ${WHITE}Chapter 13: Seeing Specific Commits${NC}"
+        echo -e "${CYAN} 14.${NC} ${WHITE}Chapter 14: Working with Branches${NC}"
+        echo -e "${CYAN} 15.${NC} ${WHITE}Chapter 15: Advanced Branching Techniques${NC}"
+        echo -e "${CYAN} 16.${NC} ${WHITE}Chapter 16: Rewriting History${NC}"
+        echo -e "${CYAN} 17.${NC} ${WHITE}Chapter 17: Viewing Commit History${NC}"
         echo ""
         echo -e "${YELLOW}════════════════════════════════════════════${NC}"
         echo ""
-        echo -e "${CYAN}  9.${NC} ${WHITE}Back to Main Menu${NC}"
+        echo -e "${CYAN} 18.${NC} ${WHITE}Back to Main Menu${NC}"
         echo ""
-        read -p "Choose a chapter (1-9): " choice
+        read -p "Choose a chapter (1-17): " choice
         
         case $choice in
             1)
@@ -277,6 +304,33 @@ chapter_select() {
                 chapter8_intro
                 ;;
             9)
+                chapter9_intro
+                ;;
+            10)
+                chapter10_intro
+                ;;
+            11)
+                chapter11_intro
+                ;;
+            12)
+                chapter12_intro
+                ;;
+            13)
+                chapter13_intro
+                ;;
+            14)
+                chapter14_intro
+                ;;
+            15)
+                chapter15_intro
+                ;;
+            16)
+                chapter16_intro
+                ;;
+            17)
+                chapter17_intro
+                ;;
+            18)
                 show_menu
                 return
                 ;;
