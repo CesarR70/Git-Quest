@@ -6,7 +6,7 @@ Git Quest is a playful, interactive terminal game designed to teach Git basics t
 
 ## 🎮 Game Overview
 
-In Git Quest, you play as a developer who "lied on their resume" about Git knowledge. The game guides you through 8 chapters, each teaching essential Git commands from initialization to branching and merging.
+In Git Quest, you play as a developer who "lied on their resume" about Git knowledge. The game guides you through 17 chapters, each teaching essential Git commands from initialization to branching and merging.
 
 ## 🚀 Features
 
