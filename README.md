@@ -54,7 +54,7 @@ The game provides a safe environment to practice Git commands without risk of af
 ## 📁 Project Structure
 
 - `git-quest.sh` - Main game orchestrator
-- `chapters/` - 8 chapter files teaching specific Git concepts
+- `chapters/` - 17 chapter files teaching specific Git concepts
 - `lib/` - Library modules for UI, validation, and narration
 
 ## 🌍 Cross-Platform Compatibility
