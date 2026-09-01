@@ -74,57 +74,49 @@ EOF
         echo ""
         narrator_celebrate "Perfect! Much cleaner, right?"
         narrator_explain_log_oneline
-        
-        echo ""
-        read -p "Press Enter to continue..." dummy
-        return 0
-    elif [[ "$user_cmd" == *"log"* ]]; then
-        # Near miss - has log but missing --oneline
-        echo -e "${YELLOW}Try adding --oneline for a cleaner view!${NC}"
-        echo ""
-        read -p "❯ " user_cmd
-        
-        if validate_git_log_oneline "$user_cmd"; then
-            show_fake_git_log_oneline
-            echo ""
-            narrator_celebrate "There it is! Beautiful, isn't it?"
-            echo ""
-            read -p "Press Enter to continue..." dummy
-            return 0
-        fi
-    else
-        narrator_wrong_answer "$user_cmd" "git log --oneline"
-        echo ""
-        echo -e "${CYAN}Type 'hint' for help, or try again!${NC}"
-        echo ""
-        read -p "❯ " user_cmd
-        
-        # Retry loop
-        local attempts=0
-        while [[ $attempts -lt 3 ]]; do
-            if validate_git_log_oneline "$user_cmd"; then
-                show_fake_git_log_oneline
-                echo ""
-                narrator_celebrate "Good job! You got it."
-                echo ""
-                read -p "Press Enter to continue..." dummy
-                return 0
-            elif [[ "$user_cmd" == "hint" ]]; then
-                echo -e "${GREEN}Hint: $(get_hint "git log --oneline")${NC}"
-            else
-                narrator_disappointed "Nope. Try again."
-            fi
-            ((attempts++))
-            read -p "❯ " user_cmd
-        done
-        
-        # Give up and show answer
-        narrator_show_answer "git log --oneline"
-        show_fake_git_log_oneline
         echo ""
         read -p "Press Enter to continue..." dummy
         return 0
     fi
+
+    # Near miss - has log but missing --oneline
+    if [[ "$user_cmd" == *"log"* ]]; then
+        echo -e "${YELLOW}Try adding --oneline for a cleaner view!${NC}"
+        echo ""
+    else
+        narrator_wrong_answer "$user_cmd" "git log --oneline"
+    fi
+
+    echo ""
+    echo -e "${CYAN}Type 'hint' for help, or try again!${NC}"
+    echo ""
+    read -p "❯ " user_cmd
+
+    # Retry loop
+    local attempts=0
+    while [[ $attempts -lt 3 ]]; do
+        if validate_git_log_oneline "$user_cmd"; then
+            show_fake_git_log_oneline
+            echo ""
+            narrator_celebrate "Good job! You got it."
+            echo ""
+            read -p "Press Enter to continue..." dummy
+            return 0
+        elif [[ "$user_cmd" == "hint" ]]; then
+            echo -e "${GREEN}Hint: $(get_hint "git log --oneline")${NC}"
+        else
+            narrator_disappointed "Nope. Try again."
+        fi
+        ((attempts++))
+        read -p "❯ " user_cmd
+    done
+
+    # Give up and show answer
+    narrator_show_answer "git log --oneline"
+    show_fake_git_log_oneline
+    echo ""
+    read -p "Press Enter to continue..." dummy
+    return 0
 }
 
 # ============================================================================

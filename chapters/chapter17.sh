@@ -104,7 +104,19 @@ retry_log_oneline() {
     
     narrator_show_answer "git log --oneline"
     echo ""
-    echo "Now try graph view:"
+    read -p "❯ " user_cmd
+    if validate_git_log_oneline "$user_cmd"; then
+        show_fake_git_log_oneline
+        echo ""
+        narrator_celebrate "There you go! Compact and clean."
+    else
+        show_fake_git_log_oneline
+        echo ""
+        narrator_encourage "No worries! Here's what it looks like."
+    fi
+    echo ""
+    echo -e "${WHITE}Now try the graph view:${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_log_graph
 }

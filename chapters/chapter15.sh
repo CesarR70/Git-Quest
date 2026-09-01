@@ -101,7 +101,19 @@ retry_branch_v() {
     
     narrator_show_answer "git branch -v"
     echo ""
-    echo "Now try the shortcut command:"
+    read -p "❯ " user_cmd
+    if validate_git_branch_v "$user_cmd"; then
+        show_fake_git_branch_v
+        echo ""
+        narrator_celebrate "There you go! You can see which commit each branch points to!"
+    else
+        show_fake_git_branch_v
+        echo ""
+        narrator_encourage "No worries! Here's what git branch -v shows."
+    fi
+    echo ""
+    echo -e "${WHITE}Now create and switch to a new branch in ONE command:${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_checkout_b
 }
