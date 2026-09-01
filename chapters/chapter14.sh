@@ -191,7 +191,15 @@ retry_branch() {
     
     narrator_show_answer "git branch feature"
     echo ""
-    echo "Now switch to it:"
+    read -p "❯ " user_cmd
+    if validate_git_branch_name "$user_cmd" "feature"; then
+        narrator_celebrate "There you go! Branch created."
+    else
+        narrator_encourage "No worries! Here's how the command works."
+    fi
+    echo ""
+    echo -e "${WHITE}Now switch to it:${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_checkout
 }
@@ -251,6 +259,20 @@ retry_checkout() {
     done
     
     narrator_show_answer "git checkout feature"
+    echo ""
+    read -p "❯ " user_cmd
+    if validate_git_checkout_branch "$user_cmd" "feature"; then
+        narrator_celebrate "There you go! You're on the feature branch."
+    else
+        narrator_encourage "No worries! Here's how the command works."
+    fi
+    echo ""
+    echo -e "${WHITE}Step 1: Create a file with some content:${NC}"
+    echo ""
+    echo -e "${GREEN}$ echo 'Feature work' > feature.txt${NC}"
+    echo ""
+    read -p "❯ " user_cmd
+    retry_echo
 }
 
 retry_echo() {
@@ -280,7 +302,17 @@ retry_echo() {
     echo ""
     narrator_show_answer "echo 'Feature work' > feature.txt"
     echo ""
-    echo "Now add the file:"
+    read -p "❯ " user_cmd
+    if validate_echo_file "$user_cmd" "feature.txt"; then
+        narrator_celebrate "There you go! File created."
+    else
+        narrator_encourage "No worries! Here's how the command works."
+    fi
+    echo ""
+    echo -e "${WHITE}Now add the file:${NC}"
+    echo ""
+    echo -e "${GREEN}$ git add feature.txt${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_add
 }
@@ -309,7 +341,17 @@ retry_add() {
     
     narrator_show_answer "git add feature.txt"
     echo ""
-    echo "Now commit the changes:"
+    read -p "❯ " user_cmd
+    if validate_git_add_file "$user_cmd" "feature.txt"; then
+        narrator_celebrate "There you go! File staged."
+    else
+        narrator_encourage "No worries! Here's how the command works."
+    fi
+    echo ""
+    echo -e "${WHITE}Now commit the changes:${NC}"
+    echo ""
+    echo -e "${GREEN}$ git commit -m 'Add feature'${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_commit_main
 }
@@ -336,7 +378,15 @@ retry_commit() {
     
     narrator_show_answer "git commit -m 'Add feature'"
     echo ""
-    echo "Now switch back to main:"
+    read -p "❯ " user_cmd
+    if validate_git_commit "$user_cmd"; then
+        narrator_celebrate "There you go! Commit made."
+    else
+        narrator_encourage "No worries! Here's how the command works."
+    fi
+    echo ""
+    echo -e "${WHITE}Now switch back to main:${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_checkout_main
 }
@@ -363,7 +413,15 @@ retry_commit_main() {
     
     narrator_show_answer "git commit -m 'Add feature'"
     echo ""
-    echo "Now switch back to main:"
+    read -p "❯ " user_cmd
+    if validate_git_commit "$user_cmd"; then
+        narrator_celebrate "There you go! Commit made."
+    else
+        narrator_encourage "No worries! Here's how the command works."
+    fi
+    echo ""
+    echo -e "${WHITE}Now switch back to main:${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_checkout_main
 }
@@ -390,7 +448,15 @@ retry_checkout_main() {
     
     narrator_show_answer "git checkout main"
     echo ""
-    echo "Now merge the feature:"
+    read -p "❯ " user_cmd
+    if validate_git_checkout_branch "$user_cmd" "main"; then
+        narrator_celebrate "There you go! Back on main."
+    else
+        narrator_encourage "No worries! Here's how the command works."
+    fi
+    echo ""
+    echo -e "${WHITE}Now merge the feature:${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_merge
 }

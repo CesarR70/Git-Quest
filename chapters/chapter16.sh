@@ -105,7 +105,19 @@ retry_initial_commit() {
     
     narrator_show_answer "git commit --allow-empty -m 'Fixed stuff'"
     echo ""
-    echo "Now amend it:"
+    read -p "❯ " user_cmd
+    if validate_git_commit_msg "$user_cmd" "Fixed stuff"; then
+        show_fake_bad_commit
+        echo ""
+        narrator_disappointed "Oh no! 'Fixed stuff'?! The commit history weeps."
+    else
+        show_fake_bad_commit
+        echo ""
+        narrator_encourage "No worries! The bad commit was made anyway."
+    fi
+    echo ""
+    echo -e "${WHITE}Now let's amend that mess to something proper:${NC}"
+    echo ""
     read -p "❯ " user_cmd
     retry_amend
 }
