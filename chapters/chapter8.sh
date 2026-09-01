@@ -35,7 +35,7 @@ EOF
     read -p "❯ " user_cmd
     
     # Validate checkout to main
-    if validate_git_checkout "$user_cmd"; then
+    if validate_git_checkout_branch "$user_cmd" "main"; then
         show_fake_git_checkout "main"
         echo ""
         
@@ -47,7 +47,7 @@ EOF
         echo ""
         read -p "❯ " user_cmd2
         
-        if validate_git_merge "$user_cmd2"; then
+        if validate_git_merge_branch "$user_cmd2" "feature-login"; then
             show_fake_git_merge
             echo ""
             narrator_celebrate "AMAZING! The feature-login branch has been merged into main!"
@@ -61,7 +61,7 @@ EOF
             echo ""
             read -p "❯ " user_cmd2
             
-            if validate_git_merge "$user_cmd2"; then
+            if validate_git_merge_branch "$user_cmd2" "feature-login"; then
                 show_fake_git_merge
                 echo ""
                 narrator_celebrate "You're now a Git master!"
@@ -78,12 +78,12 @@ EOF
         echo ""
         read -p "❯ " user_cmd
         
-        if validate_git_checkout "$user_cmd"; then
+        if validate_git_checkout_branch "$user_cmd" "main"; then
             show_fake_git_checkout "main"
             echo ""
             read -p "❯ " user_cmd2
             
-            if validate_git_merge "$user_cmd2"; then
+            if validate_git_merge_branch "$user_cmd2" "feature-login"; then
                 show_fake_git_merge
                 echo ""
                 narrator_celebrate "You did it!"

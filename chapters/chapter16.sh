@@ -42,7 +42,7 @@ EOF
     read -p "❯ " user_cmd
     
     # Validate initial commit command
-    if validate_command "$user_cmd" "git commit --allow-empty -m '*Fixed stuff*'"; then
+    if validate_git_commit_msg "$user_cmd" "Fixed stuff"; then
         echo ""
         show_fake_bad_commit
         echo ""
@@ -84,7 +84,7 @@ retry_initial_commit() {
     read -p "❯ " user_cmd
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git commit --allow-empty -m '*Fixed stuff*'"; then
+        if validate_git_commit_msg "$user_cmd" "Fixed stuff"; then
             show_fake_bad_commit
             echo ""
             narrator_disappointed "Oh no! 'Fixed stuff'?! The commit history weeps."
