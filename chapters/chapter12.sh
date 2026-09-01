@@ -69,7 +69,7 @@ EOF
     read -p "❯ " user_cmd
     
     # Validate git log --oneline command
-    if validate_command "$user_cmd" "git log --oneline"; then
+    if validate_git_log_oneline "$user_cmd"; then
         show_fake_git_log_oneline
         echo ""
         narrator_celebrate "Perfect! Much cleaner, right?"
@@ -84,7 +84,7 @@ EOF
         echo ""
         read -p "❯ " user_cmd
         
-        if validate_command "$user_cmd" "git log --oneline"; then
+        if validate_git_log_oneline "$user_cmd"; then
             show_fake_git_log_oneline
             echo ""
             narrator_celebrate "There it is! Beautiful, isn't it?"
@@ -102,7 +102,7 @@ EOF
         # Retry loop
         local attempts=0
         while [[ $attempts -lt 3 ]]; do
-            if validate_command "$user_cmd" "git log --oneline"; then
+            if validate_git_log_oneline "$user_cmd"; then
                 show_fake_git_log_oneline
                 echo ""
                 narrator_celebrate "Good job! You got it."

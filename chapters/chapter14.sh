@@ -60,13 +60,13 @@ EOF
     read -p "❯ " user_cmd
     
     # Validate git branch command
-    if validate_command "$user_cmd" "git branch feature"; then
+    if validate_git_branch_name "$user_cmd" "feature"; then
         echo ""
         narrator_celebrate "Branch created! Now switch to it."
         echo ""
         read -p "❯ " user_cmd
         
-        if validate_command "$user_cmd" "git checkout feature"; then
+        if validate_git_checkout_branch "$user_cmd" "feature"; then
             echo ""
             narrator_celebrate "You're on the feature branch! Now let's do some work."
             echo ""
@@ -76,8 +76,8 @@ EOF
             echo ""
             read -p "❯ " user_cmd
             
-            # Accept echo command with any variation
-            if [[ "$user_cmd" =~ echo.*feature\.txt ]]; then
+            # Validate echo file creation
+            if validate_echo_file "$user_cmd" "feature.txt"; then
                 echo ""
                 narrator_celebrate "File created! Now add it to the staging area."
                 echo ""
@@ -87,7 +87,7 @@ EOF
                 echo ""
                 read -p "❯ " user_cmd
                 
-                if validate_command "$user_cmd" "git add feature.txt"; then
+                if validate_git_add_file "$user_cmd" "feature.txt"; then
                     echo ""
                     narrator_celebrate "File staged! Now commit your changes."
                     echo ""
@@ -103,13 +103,13 @@ EOF
                         echo ""
                         read -p "❯ " user_cmd
                         
-                        if validate_command "$user_cmd" "git checkout main"; then
+                        if validate_git_checkout_branch "$user_cmd" "main"; then
                             echo ""
                             narrator_celebrate "You're back on main! Now merge the feature."
                             echo ""
                             read -p "❯ " user_cmd
                             
-                            if validate_command "$user_cmd" "git merge feature"; then
+                            if validate_git_merge_branch "$user_cmd" "feature"; then
                                 show_fake_git_merge
                                 echo ""
                                 narrator_celebrate "Merge successful! You've mastered branch workflow!"
@@ -173,7 +173,7 @@ retry_branch() {
     read -p "❯ " user_cmd
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git branch feature"; then
+        if validate_git_branch_name "$user_cmd" "feature"; then
             echo ""
             narrator_celebrate "Branch created! Now switch to it."
             echo ""
@@ -200,7 +200,7 @@ retry_checkout() {
     local attempts=0
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git checkout feature"; then
+        if validate_git_checkout_branch "$user_cmd" "feature"; then
             echo ""
             narrator_celebrate "You're on the feature branch! Now let's do some work."
             echo ""
@@ -210,7 +210,7 @@ retry_checkout() {
             echo ""
             read -p "❯ " user_cmd
             
-            if [[ "$user_cmd" =~ echo.*feature\.txt ]]; then
+            if validate_echo_file "$user_cmd" "feature.txt"; then
                 echo ""
                 narrator_celebrate "File created! Now add it to the staging area."
                 echo ""
@@ -220,7 +220,7 @@ retry_checkout() {
                 echo ""
                 read -p "❯ " user_cmd
                 
-                if validate_command "$user_cmd" "git add feature.txt"; then
+                if validate_git_add_file "$user_cmd" "feature.txt"; then
                     echo ""
                     narrator_celebrate "File staged! Now commit your changes."
                     echo ""
@@ -262,7 +262,7 @@ retry_echo() {
         echo ""
         read -p "❯ " user_cmd
         
-        if [[ "$user_cmd" =~ echo.*feature\.txt ]]; then
+        if validate_echo_file "$user_cmd" "feature.txt"; then
             echo ""
             narrator_celebrate "File created! Now add it to the staging area."
             echo ""
@@ -289,7 +289,7 @@ retry_add() {
     local attempts=0
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git add feature.txt"; then
+        if validate_git_add_file "$user_cmd" "feature.txt"; then
             echo ""
             narrator_celebrate "File staged! Now commit your changes."
             echo ""
@@ -372,7 +372,7 @@ retry_checkout_main() {
     local attempts=0
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git checkout main"; then
+        if validate_git_checkout_branch "$user_cmd" "main"; then
             echo ""
             narrator_celebrate "You're back on main! Now merge the feature."
             echo ""
@@ -399,7 +399,7 @@ retry_merge() {
     local attempts=0
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git merge feature"; then
+        if validate_git_merge_branch "$user_cmd" "feature"; then
             show_fake_git_merge
             echo ""
             narrator_celebrate "Merge successful! You've mastered branch workflow!"

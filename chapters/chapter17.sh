@@ -42,7 +42,7 @@ EOF
     read -p "❯ " user_cmd
     
     # Validate git log --oneline command
-    if validate_command "$user_cmd" "git log --oneline"; then
+    if validate_git_log_oneline "$user_cmd"; then
         show_fake_git_log_oneline
         echo ""
         narrator_celebrate "Nice and compact! No fluff, just the essentials."
@@ -51,7 +51,7 @@ EOF
         echo ""
         read -p "❯ " user_cmd
         
-        if validate_command "$user_cmd" "git log --graph"; then
+        if validate_git_log_graph "$user_cmd"; then
             show_fake_git_log_graph
             echo ""
             narrator_celebrate "You can literally SEE the branch structure!"
@@ -83,7 +83,7 @@ retry_log_oneline() {
     read -p "❯ " user_cmd
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git log --oneline"; then
+        if validate_git_log_oneline "$user_cmd"; then
             show_fake_git_log_oneline
             echo ""
             narrator_celebrate "Compact and clean!"
@@ -113,7 +113,7 @@ retry_log_graph() {
     local attempts=0
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git log --graph"; then
+        if validate_git_log_graph "$user_cmd"; then
             show_fake_git_log_graph
             echo ""
             narrator_celebrate "You can SEE the branches!"

@@ -40,7 +40,7 @@ EOF
     read -p "❯ " user_cmd
     
     # Validate git branch -v command
-    if validate_command "$user_cmd" "git branch -v"; then
+    if validate_git_branch_v "$user_cmd"; then
         show_fake_git_branch_v
         echo ""
         narrator_celebrate "SEE? You can see which commit each branch points to!"
@@ -80,7 +80,7 @@ retry_branch_v() {
     read -p "❯ " user_cmd
     
     while [[ $attempts -lt 3 ]]; do
-        if validate_command "$user_cmd" "git branch -v"; then
+        if validate_git_branch_v "$user_cmd"; then
             show_fake_git_branch_v
             echo ""
             narrator_celebrate "You can see which commit each branch points to!"

@@ -24,7 +24,7 @@ chapter9_intro() {
     actually useful.
     
     Your task:
-    Create a file, make some changes, then use git diff to see them!"
+    Create a file called 'changes.txt', make some changes, then use git diff to see them!"
 EOF
     
     echo ""
@@ -33,20 +33,20 @@ EOF
     
     read -p "❯ " user_cmd
     
-    # Validate command - check if user entered touch or similar file creation
-    if validate_command "$user_cmd" "touch changes.txt"; then
-        echo -e "${GREEN}changes.txt created!${NC}"
-        echo ""
-        show_git_diff_instructions
-        return 0
-    elif [[ "$user_cmd" == "touch"* ]] || [[ "$user_cmd" == *"changes.txt"* ]]; then
-        # Near miss - slight variation
+    # Validate command - check if user triggered file creation
+    if validate_touch_file "$user_cmd" "changes.txt"; then
         echo -e "${GREEN}changes.txt created!${NC}"
         echo ""
         show_git_diff_instructions
         return 0
     else
-        narrator_wrong_answer "$user_cmd" "touch changes.txt"
+        # Check for near miss
+        local hint=$(analyze_near_miss "$user_cmd" "touch changes.txt")
+        if [[ -n "$hint" ]]; then
+            echo -e "${YELLOW}$hint${NC}"
+        else
+            narrator_wrong_answer "$user_cmd" "touch changes.txt"
+        fi
         echo ""
         echo -e "${CYAN}Type 'hint' for help, or try again!${NC}"
         echo ""
@@ -55,7 +55,7 @@ EOF
         # Retry loop for file creation
         local attempts=0
         while [[ $attempts -lt 3 ]]; do
-            if validate_command "$user_cmd" "touch changes.txt"; then
+            if validate_touch_file "$user_cmd" "changes.txt"; then
                 echo -e "${GREEN}changes.txt created!${NC}"
                 echo ""
                 show_git_diff_instructions
@@ -120,7 +120,7 @@ EOF
     read -p "❯ " user_cmd
     
     # Validate git diff command
-    if validate_command "$user_cmd" "git diff"; then
+    if validate_git_diff "$user_cmd"; then
         show_fake_git_diff
         echo ""
         narrator_celebrate "Excellent! You can see exactly what changed."
@@ -139,7 +139,7 @@ EOF
         # Retry loop
         local attempts=0
         while [[ $attempts -lt 3 ]]; do
-            if validate_command "$user_cmd" "git diff"; then
+            if validate_git_diff "$user_cmd"; then
                 show_fake_git_diff
                 echo ""
                 narrator_celebrate "Good job! You figured it out."
