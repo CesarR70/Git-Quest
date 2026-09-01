@@ -312,6 +312,20 @@ validate_git_checkout_b() {
     return 1
 }
 
+# Validate git checkout <branch> (switch to a specific branch)
+validate_git_checkout_branch() {
+    local input="$1"
+    local expected_branch="$2"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    local normalized_branch=$(echo "$expected_branch" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git checkout $normalized_branch" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
 # Validate git merge
 validate_git_merge() {
     local input="$1"
@@ -433,6 +447,18 @@ analyze_near_miss() {
     # Missing target for add
     if [[ "$expected" == "git add"* ]] && [[ "$input" == "git add" ]]; then
         echo "You need to specify which file to add!"
+        return 0
+    fi
+
+    # Missing target for touch
+    if [[ "$expected" == "touch "* ]] && [[ "$input" == "touch" ]]; then
+        echo "You need to specify which file to create!"
+        return 0
+    fi
+
+    # Missing argument for git diff
+    if [[ "$expected" == "git diff" ]] && [[ "$input" == "git" ]]; then
+        echo "You forgot the 'diff' command!"
         return 0
     fi
     
@@ -595,6 +621,18 @@ validate_git_log_oneline() {
     return 1
 }
 
+# Validate git log --graph
+validate_git_log_graph() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git log --graph" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
 # Validate git rebase
 validate_git_rebase() {
     local input="$1"
@@ -618,6 +656,18 @@ validate_git_branch_create() {
         if [[ -n "$after_branch" ]]; then
             return 0
         fi
+    fi
+    
+    return 1
+}
+
+# Validate git branch -v (list branches with last commit info)
+validate_git_branch_v() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$normalized" == "git branch -v" ]]; then
+        return 0
     fi
     
     return 1
@@ -737,10 +787,59 @@ Delta compression using up to 4 threads.
 Compressing objects: 100% (2/2), done.
 Writing objects: 100% (3/3), 304 bytes | 304 bytes/s, done.
 Total 3 (delta 0), reused 0 (delta 0)
+
 To https://github.com/user/repo.git
  * [new branch]      main -> main
 EOF
 }
+
+# ============================================================================
+# FILE CREATION & DIFF VALIDATORS
+# ============================================================================
+
+# Validate touch <file>
+validate_touch_file() {
+    local input="$1"
+    local expected_file="$2"
+    local normalized=$(echo "$input" | xargs | tr "[:upper:]" "[:lower:]")
+    local normalized_file=$(echo "$expected_file" | xargs | tr "[:upper:]" "[:lower:]")
+
+    if [[ "$normalized" == "touch $normalized_file" ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Validate echo <content> > <file> (create/append file with echo and redirect)
+validate_echo_file() {
+    local input="$1"
+    local expected_file="$2"
+    local normalized=$(echo "$input" | xargs)
+    local normalized_lower=$(echo "$normalized" | tr "[:upper:]" "[:lower:]")
+    local normalized_file=$(echo "$expected_file" | xargs | tr "[:upper:]" "[:lower:]")
+
+    # Accept any variation: echo <text> > <file> or echo <text> >> <file>
+    if [[ "$normalized_lower" == "echo "* ]] && [[ "$normalized_lower" == *">"*"$normalized_file" ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Validate git diff
+validate_git_diff() {
+    local input="$1"
+    local normalized=$(echo "$input" | xargs | tr "[:upper:]" "[:lower:]")
+
+    # Accept plain git diff or with options/paths (e.g. git diff --staged, git diff <file>)
+    if [[ "$normalized" == "git diff"* ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
 
 # Show fake git checkout output
 show_fake_git_checkout() {
